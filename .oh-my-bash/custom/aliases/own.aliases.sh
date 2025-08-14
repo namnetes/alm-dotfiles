@@ -34,13 +34,14 @@ alias h='history | fzf'
 alias j='jobs -l'
 alias fdf='fdfind'
 
-## show open ports
+## show open ports et l'IP de la machine
 ## '-t' affiche les connexions TCP
 ## '-u' affiche les connaxions UDP
 ## '-l' affiche uniquement les sockets d'écoute
 ## '-n' affiche les IP et les ports sous forme numérique
 ## '-p' affiche le nom du processus et son PID
 alias p='ss -tulnp'
+alias myip='show_ip'
 
 ## Quelques options au lancement de nano
 ## -l          : affiche les numéros de ligne
@@ -56,6 +57,8 @@ alias u='sudo apt update && sudo apt upgrade && sudo snap refresh'
 
 ## xclip
 alias xclip='xclip -selection clipboard'
+alias wclip='wl-copy'
+
 
 ## display fucntion defined in the custom folder of .oh-my-bash
 if [ -f "$HOME/.oh-my-bash/custom/functions/own.functions.sh" ]; then

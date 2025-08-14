@@ -75,6 +75,79 @@ fi
 
 
 ############################################################################
+## Configuration de Bat                                                    #
+##                                                                         #
+## Vérifie si 'bat' est disponible, sinon crée un alias vers 'batcat'      #
+## Pourquoi ? Sur Debian/Ubuntu, le binaire s'appelle 'batcat' au lieu de  #
+## 'bat'. Or, de nombreux outils comme fzf attendent le nom 'bat' pour     #
+## fonctionner                                                             #
+##                                                                         #
+## À propos de 'bat' :                                                     #
+## - C'est une version améliorée de 'cat'                                  #
+## - Il affiche les fichiers avec :                                        #
+##   • Syntax highlighting (couleurs selon le langage)                     #
+##   • Numérotation des lignes                                             #
+##   • Intégration Git (affiche les changements)                           #
+##   • Pagination automatique                                              #
+##   • Affichage des caractères spéciaux (option -A)                       #
+## - Très utile comme previewer dans fzf                                   #
+############################################################################
+if ! command -v bat >/dev/null 2>&1; then
+  # Vérifie si 'batcat' est installé
+  if command -v batcat >/dev/null 2>&1; then
+    # Crée le dossier ~/.local/bin s'il n'existe pas
+    mkdir -p ~/.local/bin
+
+    # Crée le lien symbolique uniquement s'il est absent
+    if [ ! -e "$HOME/.local/bin/bat" ]; then
+      ln -s "$(command -v batcat)" "$HOME/.local/bin/bat"
+    fi
+
+    # Ajoute ~/.local/bin au PATH si ce n’est pas déjà présent
+    case ":$PATH:" in
+      *":$HOME/.local/bin:"*) ;;  # déjà présent, ne rien faire
+      *) export PATH="$HOME/.local/bin:$PATH" ;;
+    esac
+  fi
+fi
+
+
+############################################################################
+## Configuration de FZF (Fuzzy Find Finder)                                #
+############################################################################
+if command -v fzf >/dev/null 2>&1; then
+  export FZF_DEFAULT_OPTS="$(cat ~/.fzfrc)"
+fi
+
+
+############################################################################
+## Configuration de XOZIDE                                                 #
+############################################################################
+if command -v zoxide >/dev/null 2>&1; then
+
+  # Active l'affichage du chemin final après l'exécution d'une commande 'z'
+  # Par défaut, 'z' te redirige silencieusement vers un dossier.
+  # Avec _ZO_ECHO=1, le chemin est affiché dans le terminal, ce qui est
+  #  utile pour :
+  # - comprendre où tu as été redirigée
+  # - déboguer des scripts
+  # - garder une trace visuelle de tes déplacements
+  export _ZO_ECHO=1
+
+  # Indique à zoxide de résoudre les liens symboliques vers leur chemin réel
+  # Cela permet d'éviter que zoxide enregistre plusieurs chemins différents
+  # qui pointent en réalité vers le même dossier.
+  # Utile si tu utilises des alias de dossiers, des montages ou des
+  # raccourcis.
+  # Exemple : /dev/latest → /dev/projets/v2025
+  # Avec cette option, zoxide enregistrera /dev/projets/v2025 au lieu 
+  # de /dev/latest
+  export _ZO_RESOLVE_SYMLINKS=1
+
+fi
+
+
+############################################################################
 ## Configuration de Neovim                                                #
 ############################################################################
 # Définit le répertoire d'installation potentiel de Neovim
@@ -383,6 +456,7 @@ gus() {
   echo "🌐 Écoute sur     : Port $PORT"
 }
 
+
 ###############################################################################
 # Renommer en lot les fichiers image dans le répertoire courant.             #
 ###############################################################################
@@ -396,4 +470,36 @@ renimg() {
 ###############################################################################
 csvc() {
   python3 "$HOME/.oh-my-bash/custom/functions/csv_checker.py" "$@"
+}
+
+
+###############################################################################
+# Fonction bash                                                               #
+###############################################################################
+finfo() {
+  python3 "$HOME/.oh-my-bash/custom/functions/functions_infos.py" "$@"
+}
+
+
+###############################################################################
+# Affiche l'IP de la machine                                                  #
+###############################################################################
+show_ip() {
+  echo "🔍 Interfaces avec IP détectées :"
+
+  # Liste des interfaces avec IPv4
+  ip -o -4 addr show | while read -r line; do
+    iface=$(echo "$line" | awk '{print $2}')
+    ipv4=$(echo "$line" | awk '{print $4}')
+    echo "🖧 Interface: $iface"
+    echo "   IPv4: $ipv4"
+  done
+
+  # Liste des interfaces avec IPv6
+  ip -o -6 addr show | while read -r line; do
+    iface=$(echo "$line" | awk '{print $2}')
+    ipv6=$(echo "$line" | awk '{print $4}')
+    echo "🖧 Interface: $iface"
+    echo "   IPv6: $ipv6"
+  done
 }
