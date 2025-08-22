@@ -1,0 +1,49 @@
+# Ce fichier, nommé `.fzfrc`, est la configuration par défaut
+# pour l'outil de recherche en ligne de commande FZF (Fuzzy Finder).
+# 
+# Il est chargé dans le shell via la variable d'environnement
+# FZF_DEFAULT_OPTS, comme défini dans votre configuration de
+# `.bashrc` ou `.zshrc`. Chaque ligne de ce fichier ajoute une
+# option à FZF, personnalisant son comportement par défaut.
+# 
+# Son objectif est d'améliorer l'expérience utilisateur en
+# ajustant l'apparence, la navigation et les fonctionnalités
+# avancées de FZF pour le rendre plus efficace et intuitif.
+# 
+# Voici une décomposition des sections de ce fichier :
+# 
+# 1. Apparence : Gère l'aspect visuel de l'interface, comme
+#    la taille, les bordures et la position des résultats.
+# 
+# 2. Navigation : Définit les raccourcis clavier et le comportement
+#    de sélection, permettant une interaction plus fluide.
+# 
+# 3. Prévisualisation : Active et configure la fenêtre d'aperçu
+#    pour afficher le contenu des fichiers sans les ouvrir.
+# 
+# 4. Couleurs : Permet de personnaliser le schéma de couleurs
+#    pour une meilleure lisibilité ou pour s'adapter au thème
+#    de votre terminal.
+# 
+# Chaque option est documentée avec un commentaire pour
+# en faciliter la compréhension et la modification.
+# ------------------------------------------------------------------------------
+
+# Apparence générale
+--height=45%                  # Utilise 40% de la hauteur du terminal
+--layout=reverse              # Affiche les résultats en bas
+--border                      # Ajoute une bordure autour de l'interface
+--info=inline                 # Affiche les infos de sélection sur la même ligne
+--prompt="❯ "                 # Personnalise le symbole du prompt
+
+# Navigation et sélection
+--multi                      # Permet la sélection multiple
+--cycle                      # Permet de revenir au début/fin de la liste
+--bind=ctrl-j:down,ctrl-k:up # Navigation avec Ctrl+j / Ctrl+k
+
+# Prévisualisation du contenu des fichiers
+--preview='bat --style=numbers --color=always {}'  # Affiche le contenu avec bat
+--preview-window=right:60%:wrap                    # Fenêtre de preview à droite
+
+# Couleurs personnalisées (facultatif)
+--color=fg:#c5c8c6,bg:#1d1f21,hl:#81a2be,fg+:#f0c674,bg+:#373b41,hl+:#b294bb

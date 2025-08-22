@@ -1,0 +1,13 @@
+# ~/.config/yazi/init.toml
+
+# La section [manager] contient les options de comportement du gestionnaire de fichiers
+[manager]
+# Définir l'éditeur par défaut pour Yazi
+# Yazi appellera la commande 'hx' lorsque vous tenterez d'éditer un fichier.
+editor = "hx"
+
+# Si vous souhaitez une configuration plus complète,
+# vous pouvez copier le fichier de configuration par défaut de Yazi.
+# On peut le trouver généralement à cet endroit après installation :
+# /usr/share/yazi/config/init.toml
+# Mais pour l'éditeur, la ligne ci-dessus est suffisante.

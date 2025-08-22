@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Name=Wikinotes
+Comment=Pulls the latest wiki notes and opens them
+Exec=/home/galan/.config/my_ubuntu/open_wikinotes.sh
+Icon=/home/galan/.config/my_ubuntu/wikinotes_black.png
+Terminal=false
+Type=Application
+

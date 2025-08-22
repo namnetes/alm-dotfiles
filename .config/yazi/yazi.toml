@@ -1,0 +1,41 @@
+# ~/.config/yazi/yazi.toml
+
+[open]
+# Définit Helix comme éditeur par défaut
+editor = "hx"
+
+[keymap.normal]
+# Ouvrir le fichier avec Helix (mode normal)
+enter = "open"
+
+# Raccourci personnalisé : ouvrir avec Helix en lecture seule
+"ctrl-r" = "plugin:open_with_helix_readonly"
+
+# Raccourci pour quitter Yazi
+"q" = "quit"
+
+# Raccourci pour copier le chemin absolu
+"y" = "yank_path"
+
+# Raccourci pour afficher les infos du fichier
+"i" = "info"
+
+[plugin."open_with_helix_readonly"]
+# Commande personnalisée pour ouvrir avec Helix en lecture seule
+command = "hx"
+args = ["--readonly", "$1"]
+
+[preview]
+# Active la prévisualisation dans le terminal
+enable = true
+
+# Utilise bat pour les fichiers texte (optionnel, si tu veux une alternative à bcat)
+text = "bat --style=plain --color=always $1"
+
+# Tu peux aussi ajouter une règle pour bcat si tu veux l'utiliser en externe
+# Exemple :
+# text = "bcat $1"
+
+[log]
+# Niveau de log (utile pour debug)
+level = "info"
