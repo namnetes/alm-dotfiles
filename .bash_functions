@@ -1,5 +1,16 @@
 #!/usr/bin/env bash
 
+
+############################################################################
+## Starship Shell                                                          #
+############################################################################
+STARSHIP_VERSION=$(starship --version 2>/dev/null | head -n 1)
+
+if [[ "$STARSHIP_VERSION" =~ ^starship\ [0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+  eval "$(starship init bash)"
+fi
+
+
 ############################################################################
 ## Jupyter Lab : Environnement bac à sable                                 #
 ############################################################################
@@ -56,7 +67,7 @@ export NVM_DIR="$HOME/.nvm"
 # S'il existe, le charge (ceci charge NVM)
 if [ -s "$NVM_DIR/nvm.sh" ]; then
   source "$NVM_DIR/nvm.sh"
-  
+
   # Vérifie si le script de complétion bash pour NVM existe dans le répertoire NVM_DIR
   # S'il existe, le charge (ceci charge la complétion bash de NVM)
   if [ -s "$NVM_DIR/bash_completion" ]; then
@@ -69,8 +80,12 @@ fi
 ## Configuration de Helix Editor                                           #
 ############################################################################
 if command -v hx >/dev/null 2>&1; then
-    export EDITOR="hx"
-    export VISUAL="hx"
+  export EDITOR="hx"
+  export VISUAL="hx"
+  alias helix='hx'
+  if ! git config --get core.editor | grep -q "hx"; then
+    git config --global core.editor "hx"
+  fi
 fi
 
 
@@ -113,10 +128,72 @@ fi
 
 
 ############################################################################
-## Configuration de FZF (Fuzzy Find Finder)                                #
+## Configuration FZF : fuzzy finder intelligent                           #
 ############################################################################
-if command -v fzf >/dev/null 2>&1; then
+if command -v zoxide >/dev/null 2>&1; then
+
+  # Charger les options par défaut depuis .fzfrc
   export FZF_DEFAULT_OPTS="$(cat ~/.fzfrc)"
+
+  # Activer les raccourcis clavier et l'autocomplétion
+  if [ -f /usr/share/fzf/key-bindings.bash ]; then
+    source /usr/share/fzf/key-bindings.bash
+  fi
+
+  if [ -f /usr/share/fzf/completion.bash ]; then
+    source /usr/share/fzf/completion.bash
+  fi
+
+  # Alias utiles pour booster la navigation
+  # ---------------------------------------
+
+  # Recherche rapide dans le dossier courant
+  alias ff='fzf'
+
+  # Recherche dans l’historique des commandes
+  alias fh='history | fzf'
+
+  # Navigation dans les dossiers
+  alias fcd='cd $(find . -type d | fzf)'
+
+  # Kill interactif
+  alias fkill='ps aux | fzf | awk '\''{print $2}'\'' | xargs kill -9'
+
+  # Recherche fuzzy avec preview via bat + ripgrep + fzf
+  # En amon la compatibilité bat/batcat a déjà été vérifiée !
+  if command -v rg >/dev/null 2>&1 && command -v fzf >/dev/null 2>&1; then
+    alias fsearch="rg --files | \
+    fzf --preview 'bat --style=numbers --color=always {}'"
+  fi
+
+fi
+
+
+############################################################################
+# Intégration de ripgrep (rg) : recherche rapide et précise
+############################################################################
+if command -v rg &>/dev/null; then
+
+  # Recherche simple dans tous les fichiers du dossier courant
+  alias rgf='rg --smart-case --hidden --follow'
+
+  # Recherche dans les fichiers visibles uniquement (ignore les dotfiles)
+  alias rgv='rg --smart-case'
+
+  # Recherche dans les fichiers cachés uniquement (dotfiles)
+  alias rgdot='rg --smart-case --hidden --glob ".*"'
+
+  # Recherche avec 3 lignes de contexte avant/après chaque correspondance
+  alias rgc='rg --smart-case -C 3'
+
+  # Recherche dans les fichiers d’un type donné (ex: js, py, md)
+  alias rgt='rg --smart-case --type'
+
+  # Recherche en excluant les dossiers de test ou build
+  alias rgx='rg --smart-case --glob "!{tests,build}/*"'
+
+  # Recherche dans les fichiers suivis par Git uniquement
+  alias rggit='rg --smart-case --files | xargs rg'
 fi
 
 
@@ -140,10 +217,52 @@ if command -v zoxide >/dev/null 2>&1; then
   # Utile si tu utilises des alias de dossiers, des montages ou des
   # raccourcis.
   # Exemple : /dev/latest → /dev/projets/v2025
-  # Avec cette option, zoxide enregistrera /dev/projets/v2025 au lieu 
+  # Avec cette option, zoxide enregistrera /dev/projets/v2025 au lieu
   # de /dev/latest
   export _ZO_RESOLVE_SYMLINKS=1
 
+  # Permet à Zoxide de s’initialiser à chaque ouverture de terminal et en
+  # même temps de remplacer la commande traditionnelle 'cd' par 'z'
+  eval "$(zoxide init --cmd cd bash)"
+
+fi
+
+
+############################################################################
+# Intégration de eza (alternative moderne à ls)
+############################################################################
+if command -v eza &>/dev/null; then
+
+  # Remplace la commande ls classique avec tri des dossiers en premier
+  alias ls='eza --group-directories-first --color=auto'
+
+  # Liste détaillée avec infos Git et tri des dossiers en premier
+  alias ll='eza -l --group-directories-first --git'
+
+  # Liste tous les fichiers, y compris les cachés, avec infos Git
+  alias la='eza -la --group-directories-first --git'
+  alias l='la'
+
+  # Affiche l’arborescence du dossier courant jusqu’à 2 niveaux
+  alias lt='eza --tree --level=2 --group-directories-first'
+
+  # Trie les fichiers par taille décroissante
+  alias lS='eza -l --sort=size'
+
+  # Trie les fichiers par date de modification
+  alias lD='eza -l --sort=date'
+
+  # Trie les fichiers par extension (utile pour les projets multi-langages)
+  alias lx='eza -l --sort=extension'
+
+  # Affiche un fichier par ligne, sans détails
+  alias l1='eza -1'
+
+  # Affiche uniquement les répertoires du dossier courant
+  alias ldir='eza -la --only-dirs'
+
+  # Affiche uniquement les fichiers cachés (dotfiles), sans les dossiers
+  alias lh="eza -la --only-files | grep '^\.'"
 fi
 
 
@@ -161,21 +280,6 @@ if [ -d "$NVIM_HOME/bin" ]; then
 else
   # Sinon, définit nano comme éditeur par défaut
   export EDITOR=nano
-fi
-
-
-############################################################################
-## Starship Shell                                                         #
-############################################################################
-STARSHIP_VERSION=$(starship --version 2>/dev/null | head -n 1)
-
-if [[ "$STARSHIP_VERSION" =~ ^starship\ [0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-  if [[ "$PROMPT_COMMAND" != *starship_precmd* ]]; then
-  #  echo "Starship n'est pas encore initialisé"
-    eval "$(starship init bash)"
-  #else
-  #  echo "Starship déjà actif"
-  fi
 fi
 
 
@@ -204,27 +308,6 @@ if [ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]; then
 fi
 
 export GTK_MODULES=canberra-gtk-module
-
-
-############################################################################
-## Élimine les chemins redondants dans la variable PATH.                   #
-############################################################################
-clean_path() { # Élimine les chemins redondants dans la variable PATH.
-  local old_IFS="$IFS"
-  IFS=':'
-  local unique_paths=()
-  local path
-
-  for path in $PATH; do
-    if [[ ! " ${unique_paths[@]} " =~ " $path " ]]; then
-      unique_paths+=("$path")
-    fi
-  done
-
-  IFS=':'
-  PATH="${unique_paths[*]}"
-  IFS="$old_IFS"
-}
 
 
 ###############################################################################
@@ -434,7 +517,7 @@ gsp() { # Affiche le statut de plusieurs projets Git
 # Renommer en lot les fichiers image dans le répertoire courant.              #
 ###############################################################################
 renimg() { # Renommer en lot les fichiers image
-  python3 "$HOME/.oh-my-bash/custom/functions/rename_images.py" "$@"
+  python3 "$HOME/.functions/rename_images.py" "$@"
 }
 
 
@@ -442,7 +525,7 @@ renimg() { # Renommer en lot les fichiers image
 # Vérifie que chaque ligne du CSV a le même nombre de colonnes                #
 ###############################################################################
 csvc() { # Vérifie que chaque ligne du CSV a le même nombre de colonnes
-  python3 "$HOME/.oh-my-bash/custom/functions/csv_checker.py" "$@"
+  python3 "$HOME/.functions/csv_checker.py" "$@"
 }
 
 
@@ -450,7 +533,15 @@ csvc() { # Vérifie que chaque ligne du CSV a le même nombre de colonnes
 # Affiche la liste des fonctions du script dont le nom est passé en paramètre #
 ###############################################################################
 finfo() { # Affiche la liste des fonctions du script passé en paramètre
-  python3 "$HOME/.oh-my-bash/custom/functions/functions_infos.py" "$@"
+  python3 "$HOME/.functions/functions_infos.py" "$@"
+}
+
+
+###############################################################################
+# Synchronisation .gitignore du répertoire courant                            #
+###############################################################################
+gnore() { # Synchronisation .gitignore du répertoire courant
+  python3 "$HOME/.functions/git_ignore.py"
 }
 
 
@@ -482,7 +573,32 @@ show_ip() { # Affiche les interfaces réseau avec leurs adresses IPv4 et IPv6
 # Administration des VM KVM                                                   #
 ###############################################################################
 kadm() { # Administration des VM KVM
-  python3 "$HOME/.oh-my-bash/custom/functions/kvm_admin.py" "$@"
+  python3 "$HOME/.functions/kvm_admin.py" "$@"
 }
 
+
+###############################################################################
+# Assistant GnuPG - Chiffrer/Déchiffrer un fichier                            #
+###############################################################################
+gpgtool() { # Assistant GnuPG - Chiffrer/Déchiffrer un fichier
+  python3 "$HOME/.functions/gpg_tool.py"
+}
+
+
+###############################################################################
+# Génère dynamiquement les alias git depuis le .gitconfig                     #
+###############################################################################
+if [ -f "$HOME/.gitconfig" ] && [ -f "$HOME/.functions/git_aliases.sh" ]; then
+  source "$HOME/.functions/git_aliases.sh"
+  load_git_aliases
+fi
+
+
+###############################################################################
+## Nettoyage et réorganisation de la variable PATH                            #
+###############################################################################
+if [ -f "$HOME/.functions/clean_path.sh" ]; then
+  source "$HOME/.functions/clean_path.sh"
+  clean_path
+fi
 

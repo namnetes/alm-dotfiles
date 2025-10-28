@@ -1,0 +1,28 @@
+## Indentation et mise en forme
+set tabstospaces         ## Utiliser des espaces au lieu de tabulations
+set tabsize 2            ## Définir l'indentation par défaut à deux espaces
+set autoindent           ## Indentation automatique à la création de nouvelles lignes
+#set smartindent         ## Indentation intelligente (utile en code)
+set preserve             ## Conserver les tabulations dans les fichiers existants
+#set nowrap              ## Empêcher la coupure de mots lors du retour à la ligne
+set softwrap             ## Activer le retour à la ligne automatique
+
+## Affichage et navigation
+set linenumbers          ## Activer la numérotation des lignes
+set constantshow         ## Afficher les statistiques (position du curseur, etc.)
+#set whitespace "all"    ## Afficher les caractères invisibles
+#set highlightcolor "white,blue"  ## Mettre en surbrillance la ligne courante
+set smarthome            ## Améliorer le comportement de la touche Home
+#set help                ## Afficher les raccourcis clavier en bas de l'écran
+#set smooth              ## Navigation fluide avec les flèches
+set jumpyscrolling       ## Retour visuel lors du collage
+
+## auvegarde et sécurité
+#set backup              ## Activer la sauvegarde automatique du fichier
+#set nonewlines          ## Ne pas ajouter de saut de ligne à la fin du fichier
+
+## Recherche et édition
+set casesensitive        ## Activer la recherche intelligente (ignorer la casse)
+set matchbrackets        ## Activer le surlignage des correspondances
+set quickblank           ## Retour visuel lors de la recherche
+set zap                  ## Retour visuel lors de la suppression
