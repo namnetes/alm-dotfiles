@@ -77,19 +77,6 @@ fi
 
 
 ############################################################################
-## Configuration de Helix Editor                                           #
-############################################################################
-if command -v hx >/dev/null 2>&1; then
-  export EDITOR="hx"
-  export VISUAL="hx"
-  alias helix='hx'
-  if ! git config --get core.editor | grep -q "hx"; then
-    git config --global core.editor "hx"
-  fi
-fi
-
-
-############################################################################
 ## Configuration de Bat                                                    #
 ##                                                                         #
 ## Vérifie si 'bat' est disponible, sinon crée un alias vers 'batcat'      #
@@ -263,23 +250,6 @@ if command -v eza &>/dev/null; then
 
   # Affiche uniquement les fichiers cachés (dotfiles), sans les dossiers
   alias lh="eza -la --only-files | grep '^\.'"
-fi
-
-
-############################################################################
-## Configuration de Neovim                                                #
-############################################################################
-# Définit le répertoire d'installation potentiel de Neovim
-export NVIM_HOME=/usr/local/nvim
-
-# Vérifie si le répertoire des binaires de Neovim existe
-if [ -d "$NVIM_HOME/bin" ]; then
-  # S'il existe, l'ajoute au PATH et définit Neovim comme éditeur par défaut
-  PATH="$NVIM_HOME/bin:$PATH"
-  export EDITOR=nvim
-else
-  # Sinon, définit nano comme éditeur par défaut
-  export EDITOR=nano
 fi
 
 
