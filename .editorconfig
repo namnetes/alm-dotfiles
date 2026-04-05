@@ -1,0 +1,42 @@
+root = true
+
+# Configuration par défaut
+[*]
+indent_style = space
+indent_size = 4
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+# Empêche Claude de créer des lignes trop longues (visuellement)
+max_line_length = 88
+
+# Scripts Shell (Bash/SH) : Ta règle de 80 caractères
+[*.{sh,bash}]
+indent_size = 2
+max_line_length = 80
+
+# Python : Ta règle de 88 caractères
+[*.py]
+indent_style = space
+indent_size = 4
+max_line_length = 88
+
+# Fichiers de données CSV (Format Français ;)
+[*.csv]
+# IMPORTANT : On désactive le rognage des espaces en fin de ligne 
+# car dans un CSV, un champ vide à la fin d'une ligne est significatif.
+trim_trailing_whitespace = false
+insert_final_newline = true
+# Pas d'indentation pour les données brutes
+indent_style = none
+
+# Fichiers Markdown (CLAUDE.md, README.md)
+[*.md]
+# En Markdown, deux espaces en fin de ligne signifient un saut de ligne.
+trim_trailing_whitespace = false
+max_line_length = off
+
+# Fichiers YAML / JSON (Config technique)
+[{*.yaml,*.yml,*.json}]
+indent_size = 2

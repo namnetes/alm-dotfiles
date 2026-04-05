@@ -1,41 +1,146 @@
 # ~/.config/yazi/yazi.toml
+# Plugins requis — installer avec :
+#   ya pack -a yazi-rs/plugins#git
+#   ya pack -a yazi-rs/plugins#archive
+#   ya pack -a yazi-rs/plugins#miller
+#   ya pack -a yazi-rs/plugins#hexyl
+#   ya pack -a yazi-rs/plugins#nbpreview
+#   ya pack -a yazi-rs/plugins#full-border
+#   ya pack -a yazi-rs/plugins#smart-filter
+#   ya pack -a yazi-rs/plugins#jump-to-char
+#   ya pack -a yazi-rs/plugins#relative-motions
+#   ya pack -a yazi-rs/plugins#max-preview
+#   ya pack -a yazi-rs/plugins#hide-preview
+#   ya pack -a yazi-rs/plugins#starship
+#   ya pack -a yazi-rs/plugins#diff
+#   ya pack -a yazi-rs/plugins#chmod
 
-[open]
-# Définit Helix comme éditeur par défaut
-editor = "hx"
+# ─────────────────────────────────────────────────────────────────
+# GESTIONNAIRE — Comportement & affichage
+# ─────────────────────────────────────────────────────────────────
+[manager]
+ratio          = [1, 3, 4]
+sort_by        = "natural"
+sort_sensitive = false
+sort_reverse   = false
+sort_dir_first = true
+show_symlink   = true
+linemode       = "size"
 
-[keymap.normal]
-# Ouvrir le fichier avec Helix (mode normal)
-enter = "open"
-
-# Raccourci personnalisé : ouvrir avec Helix en lecture seule
-"ctrl-r" = "plugin:open_with_helix_readonly"
-
-# Raccourci pour quitter Yazi
-"q" = "quit"
-
-# Raccourci pour copier le chemin absolu
-"y" = "yank_path"
-
-# Raccourci pour afficher les infos du fichier
-"i" = "info"
-
-[plugin."open_with_helix_readonly"]
-# Commande personnalisée pour ouvrir avec Helix en lecture seule
-command = "hx"
-args = ["--readonly", "$1"]
-
+# ─────────────────────────────────────────────────────────────────
+# PRÉVISUALISATION
+# ─────────────────────────────────────────────────────────────────
 [preview]
-# Active la prévisualisation dans le terminal
-enable = true
+tab_size      = 2
+max_width     = 1200
+max_height    = 900
+image_filter  = "triangle"
+image_quality = 75
 
-# Utilise bat pour les fichiers texte (optionnel, si tu veux une alternative à bcat)
-text = "bat --style=plain --color=always $1"
+# ─────────────────────────────────────────────────────────────────
+# OUVREURS — Commandes d'ouverture par action
+# ─────────────────────────────────────────────────────────────────
+[opener]
+edit = [
+  { run = 'zed --wait "$@"', block = true, desc = "Zed" },
+]
+open = [
+  { run = 'xdg-open "$@"', orphan = true, desc = "Système" },
+]
+reveal = [
+  { run = 'xdg-open "$(dirname "$1")"', orphan = true, desc = "Répertoire" },
+]
+# ouch : archiveur universel (github.com/ouch-org/ouch)
+extract = [
+  { run = 'ouch d "$@"', desc = "Extraire (ouch)" },
+  { run = 'unar "$1"',   desc = "Extraire (unar)" },
+]
+play = [
+  { run = 'mpv "$@"', orphan = true, desc = "Lecture (mpv)" },
+]
+# delta : pager de diff (github.com/dandavison/delta)
+diff = [
+  { run = 'delta "$1" | less -R', block = true, desc = "Diff (delta)" },
+]
+# lazygit : TUI Git (github.com/jesseduffield/lazygit)
+lazygit = [
+  { run = 'lazygit -p "$1"', block = true, desc = "LazyGit" },
+]
+# glow : rendu Markdown (github.com/charmbracelet/glow)
+markdown_preview = [
+  { run = 'glow -p "$@"', block = true, desc = "Glow (Markdown)" },
+]
+# kitty : Ouvre une nouvelle fenêtre Kitty indépendante dans le répertoire actuel
+term = [
+  { run = 'kitty --detach', desc = "Ouvrir Kitty ici" }
+]
+# ─────────────────────────────────────────────────────────────────
+# RÈGLES D'OUVERTURE — Quelle action pour quel type
+# ─────────────────────────────────────────────────────────────────
+[open]
+rules = [
+  # Texte / code → Zed
+  { name = "*.md",                         use = ["markdown_preview"] },
+  { mime = "text/markdown",                use = ["markdown_preview"] },
+  { mime = "text/*",                       use = ["edit", "open"] },
+  { name = "*.{json,toml,yaml,yml}",       use = ["edit", "open"] },
+  { name = "*.{sh,bash,zsh,fish}",         use = ["edit", "open"] },
+  { name = "*.{py,rs,go,ts,js,lua,c,cpp}", use = ["edit", "open"] },
+  # Archives → extraction
+  { mime = "application/zip",              use = ["extract", "open"] },
+  { mime = "application/gzip",             use = ["extract", "open"] },
+  { mime = "application/x-tar",            use = ["extract", "open"] },
+  { mime = "application/x-bzip2",          use = ["extract", "open"] },
+  { mime = "application/x-xz",             use = ["extract", "open"] },
+  { mime = "application/zstd",             use = ["extract", "open"] },
+  { mime = "application/x-7z-compressed",  use = ["extract", "open"] },
+  { mime = "application/x-rar",            use = ["extract", "open"] },
+  # Médias
+  { mime = "video/*",                      use = ["play", "open"] },
+  { mime = "audio/*",                      use = ["play", "open"] },
+  # Images → visionneuse système
+  { mime = "image/*",                      use = ["open"] },
+  # PDF / bureautique
+  { mime = "application/pdf",              use = ["open"] },
+  { mime = "application/vnd.*",            use = ["open"] },
+  # Pour les dossiers
+  { name = "*/",                           use = ["term", "open"] },
+  # Fallback
+  { name = "*",                            use = ["edit", "open"] },
+]
 
-# Tu peux aussi ajouter une règle pour bcat si tu veux l'utiliser en externe
-# Exemple :
-# text = "bcat $1"
+# ─────────────────────────────────────────────────────────────────
+# PLUGINS COMMUNAUTAIRES
+# Source : https://github.com/yazi-rs/plugins
+# ─────────────────────────────────────────────────────────────────
+[plugin]
 
-[log]
-# Niveau de log (utile pour debug)
-level = "info"
+# Prévisualiseurs additionnels (ordre de priorité décroissant)
+prepend_previewers = [
+  # Archives (yazi-rs/plugins#archive)
+  { name = "*.zip",      run = "archive" },
+  { name = "*.tar",      run = "archive" },
+  { name = "*.tar.gz",   run = "archive" },
+  { name = "*.tar.bz2",  run = "archive" },
+  { name = "*.tar.xz",   run = "archive" },
+  { name = "*.tar.zst",  run = "archive" },
+  { name = "*.7z",       run = "archive" },
+  { name = "*.rar",      run = "archive" },
+  # Données tabulaires (yazi-rs/plugins#miller) — mlr requis
+  { name = "*.csv",      run = "miller" },
+  { name = "*.tsv",      run = "miller" },
+  { name = "*.ndjson",   run = "miller" },
+  # Notebooks Jupyter (yazi-rs/plugins#nbpreview)
+  { name = "*.ipynb",    run = "nbpreview" },
+  # Binaires (yazi-rs/plugins#hexyl) — hexyl requis
+  { mime = "application/octet-stream", run = "hexyl" },
+  { mime = "application/x-executable", run = "hexyl" },
+  { mime = "application/x-pie-executable", run = "hexyl" },
+]
+
+# Fetchers d'état Git (yazi-rs/plugins#git)
+# Affiche les icônes M / A / D / ? à côté des fichiers dans le panel
+prepend_fetchers = [
+  { id = "git", name = "*",  run = "git" },
+  { id = "git", name = "*/", run = "git" },
+]

@@ -1,0 +1,17 @@
+[
+    {
+        "key": "ctrl+alt+u",
+        "command": "editor.action.transformToUppercase",
+        "when": "editorTextFocus"
+    },
+    {
+        "key": "ctrl+alt+l",
+        "command": "editor.action.transformToLowercase",
+        "when": "editorTextFocus"
+    },
+    {
+        "key": "ctrl+alt+t",
+        "command": "editor.action.transformToTitlecase",
+        "when": "editorTextFocus"
+    }
+]

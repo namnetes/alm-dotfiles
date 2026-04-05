@@ -1,0 +1,307 @@
+#!/usr/bin/env bash
+
+
+############################################################################
+## Starship Shell                                                          #
+############################################################################
+STARSHIP_VERSION=$(starship --version 2>/dev/null | head -n 1)
+
+if [[ "$STARSHIP_VERSION" =~ ^starship\ [0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+  eval "$(starship init bash)"
+fi
+
+
+############################################################################
+## Editeur par défaut                                                      #
+############################################################################
+if command -v zed >/dev/null 2>&1; then
+  export EDITOR="zed --wait"
+  export VISUAL="zed --wait"
+
+  mkdir -p ~/.local/bin
+  ln -sf $(which zed) ~/.local/bin/editor
+else
+  export EDITOR="nano"
+  export VISUAL="nano"
+fi
+
+
+############################################################################
+## Jupyter Lab : Environnement bac à sable                                 #
+############################################################################
+JUPYTER_DIR="$HOME/Workspace/sandbox"
+
+if [ -d "$JUPYTER_DIR" ]; then
+  export SANDBOX_HOME="$JUPYTER_DIR"
+  if grep -qE "(Microsoft|WSL)" /proc/version; then
+    export BROWSER="/mnt/c/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"
+  fi
+fi
+
+
+############################################################################
+## NodeJS & Fast Node Manager)                                             #
+############################################################################
+# Le paramètre --use-on-cd dans la commande fnm env indique à fnm
+# (Fast Node Manager) d'activer la détection automatique de la version
+# de Node.js lorsque vous naviguez vers un répertoire spécifique avec
+# la commande cd.
+FNM_PATH="$HOME/.local/share/fnm"
+if [ -d "$FNM_PATH" ]; then
+  # Définit le répertoire où fnm est installé
+  export PATH="$FNM_PATH:$PATH"
+  eval "$(fnm env --use-on-cd)"
+
+  # Récupère la version de Node.js actuellement active (ex: "v18.18.2").
+  # La redirection 2>/dev/null masque les erreurs si aucune version n'est active.
+  CURRENT_NODE_VERSION=$(fnm ls | grep ' lts' | cut -d' ' -f2)
+
+  # Récupère la version LTS la plus récente disponible
+  LATEST_LTS_VERSION=$(fnm ls-remote --lts | tail -n 1 | cut -d' ' -f1)
+
+  # Condition de vérification :
+  # - La version courante n'est pas la même que la dernière LTS.
+  # - La version courante n'est pas "not installed" (ou vide).
+  if [ "$CURRENT_NODE_VERSION" != "$LATEST_LTS_VERSION" ] && \
+     [ "$CURRENT_NODE_VERSION" != "not installed" ] && \
+     [ -n "$LATEST_LTS_VERSION" ];
+  then
+    # Affichage d'un avertissement coloré.
+    echo -e "\n\033[1;33m⚠️ ATTENTION  Node.js LTS OBSOLÈTE.\033[0m"
+    echo -e "  » Version utilisée : \033[1m$CURRENT_NODE_VERSION\033[0m"
+    echo -e "  » Dernière LTS disponible : \033[1m$LATEST_LTS_VERSION\033[0m"
+    echo -e "  » Pour mettre à jour, exécutez : \033[36mfnm install --lts && fnm default lts-latest\033[0m\n"
+  fi
+fi
+
+
+############################################################################
+## Configuration de Bat                                                    #
+##                                                                         #
+## Vérifie si 'bat' est disponible, sinon crée un alias vers 'batcat'      #
+## Pourquoi ? Sur Debian/Ubuntu, le binaire s'appelle 'batcat' au lieu de  #
+## 'bat'. Or, de nombreux outils comme fzf attendent le nom 'bat' pour     #
+## fonctionner                                                             #
+##                                                                         #
+## À propos de 'bat' :                                                     #
+## - C'est une version améliorée de 'cat'                                  #
+## - Il affiche les fichiers avec :                                        #
+##   • Syntax highlighting (couleurs selon le langage)                     #
+##   • Numérotation des lignes                                             #
+##   • Intégration Git (affiche les changements)                           #
+##   • Pagination automatique                                              #
+##   • Affichage des caractères spéciaux (option -A)                       #
+## - Très utile comme previewer dans fzf                                   #
+############################################################################
+if ! command -v bat >/dev/null 2>&1; then
+  # Vérifie si 'batcat' est installé
+  if command -v batcat >/dev/null 2>&1; then
+    # Crée le dossier ~/.local/bin s'il n'existe pas
+    mkdir -p ~/.local/bin
+
+    # Crée le lien symbolique uniquement s'il est absent
+    if [ ! -e "$HOME/.local/bin/bat" ]; then
+      ln -s "$(command -v batcat)" "$HOME/.local/bin/bat"
+    fi
+
+    # Ajoute ~/.local/bin au PATH si ce n'est pas déjà présent
+    case ":$PATH:" in
+      *":$HOME/.local/bin:"*) ;;  # déjà présent, ne rien faire
+      *) export PATH="$HOME/.local/bin:$PATH" ;;
+    esac
+  fi
+fi
+
+
+############################################################################
+## Configuration FZF : fuzzy finder intelligent                           #
+############################################################################
+if command -v fzf >/dev/null 2>&1; then # Vérifie fzf directement ici
+
+  samples="/usr/share/doc/fzf/examples"
+  FZF_DEFAULT_OPTS="$(cat ~/.fzfrc 2>/dev/null)"
+  export FZF_DEFAULT_OPTS
+
+  # Activer les raccourcis clavier et l'autocomplétion
+  # shellcheck disable=SC1091
+  [ -f "$samples/key-bindings.bash" ] && source "$samples/key-bindings.bash"
+  # shellcheck disable=SC1091
+  [ -f "$samples/completion.bash" ] && source "$samples/completion.bash"
+
+  # --- Alias utiles ---
+  if command -v zed >/dev/null 2>&1; then
+    alias fz='zed $(fzf)'
+  fi
+  alias fn='nano $(fzf)'
+  alias ff='fzf'
+  alias fh='history | fzf'
+  alias fcd='cd $(find . -type d | fzf)'
+
+  # Recherche fuzzy avec preview via bat + ripgrep
+  if command -v rg >/dev/null 2>&1; then
+    alias fs="rg --files | fzf --preview 'bat --color=always {}'"
+  fi
+fi
+
+
+############################################################################
+# Intégration de ripgrep (rg) : recherche rapide et précise
+############################################################################
+if command -v rg &>/dev/null; then
+
+  # Recherche simple dans tous les fichiers du dossier courant
+  alias rgf='rg --smart-case --hidden --follow'
+
+  # Recherche dans les fichiers visibles uniquement (ignore les dotfiles)
+  alias rgv='rg --smart-case'
+
+  # Recherche dans les fichiers cachés uniquement (dotfiles)
+  alias rgdot='rg --smart-case --hidden --glob ".*"'
+
+  # Recherche avec 3 lignes de contexte avant/après chaque correspondance
+  alias rgc='rg --smart-case -C 3'
+
+  # Recherche dans les fichiers d'un type donné (ex: js, py, md)
+  alias rgt='rg --smart-case --type'
+
+  # Recherche en excluant les dossiers de test ou build
+  alias rgx='rg --smart-case --glob "!{tests,build}/*"'
+
+  # Recherche dans les fichiers suivis par Git uniquement
+  alias rggit='rg --smart-case --files | xargs rg'
+fi
+
+
+############################################################################
+## Configuration de XOZIDE                                                 #
+############################################################################
+if command -v zoxide >/dev/null 2>&1; then
+
+  # Active l'affichage du chemin final après l'exécution d'une commande 'z'
+  # Par défaut, 'z' te redirige silencieusement vers un dossier.
+  # Avec _ZO_ECHO=1, le chemin est affiché dans le terminal, ce qui est
+  #  utile pour :
+  # - comprendre où tu as été redirigée
+  # - déboguer des scripts
+  # - garder une trace visuelle de tes déplacements
+  ########### export _ZO_ECHO=1
+
+  # Indique à zoxide de résoudre les liens symboliques vers leur chemin réel
+  # Cela permet d'éviter que zoxide enregistre plusieurs chemins différents
+  # qui pointent en réalité vers le même dossier.
+  # Utile si tu utilises des alias de dossiers, des montages ou des
+  # raccourcis.
+  # Exemple : /dev/latest → /dev/projets/v2025
+  # Avec cette option, zoxide enregistrera /dev/projets/v2025 au lieu
+  # de /dev/latest
+  export _ZO_RESOLVE_SYMLINKS=1
+
+  # Permet à zoxide de s'initialiser à chaque ouverture de terminal et de
+  # l'utiliser à la place de 'cd'. Cependant en mode remplacement avec
+  # 'cd bash' la comamnde 'z' de zoxide est remplacée par 'cd' pour ne pas
+  # dérouter l'utilisateur
+  eval "$(zoxide init --cmd cd bash)"
+
+fi
+
+
+############################################################################
+# Intégration de eza (alternative moderne à ls)
+############################################################################
+if command -v eza &>/dev/null; then
+
+  # Remplace la commande ls classique avec tri des dossiers en premier
+  alias eza='eza --color=auto --group-directories-first'
+  alias ls='eza'
+
+  # Liste détaillée avec infos Git et tri des dossiers en premier
+  alias ll='eza -l --group-directories-first --git'
+
+  # Liste tous les fichiers, y compris les cachés, avec infos Git
+  alias la='eza -la --group-directories-first --git'
+  alias l='la'
+
+  # Affiche l'arborescence du dossier courant jusqu'à 2 niveaux
+  alias lt='eza --tree --level=2 --group-directories-first'
+
+  # Trie les fichiers par taille décroissante
+  alias lS='eza -l --sort=size'
+
+  # Trie les fichiers par date de modification
+  alias lD='eza -l --sort=date'
+
+  # Trie les fichiers par extension (utile pour les projets multi-langages)
+  alias lx='eza -l --sort=extension'
+
+  # Affiche un fichier par ligne, sans détails
+  alias l1='eza -1'
+
+  # Affiche uniquement les fichiers cachés (dotfiles), sans les dossiers
+  alias lh="eza -la --only-files --color=always | grep '^\.'"
+
+  # Affiche uniquement les répertoires non cachés du dossier courant
+  alias ldir="eza -la --only-dirs"
+fi
+
+
+############################################################################
+## Gestionnaire de paquets Python UV                                      #
+############################################################################
+# Récupère la version de UV, supprime les erreurs et ne prend que le dernier champ (le numéro de version)
+UV_VERSION=$("$HOME/.local/bin/uv" --version 2>/dev/null | awk '{print $NF}')
+
+# Vérifie si UV_VERSION n'est pas vide, indiquant que UV est probablement installé
+if [[ -n "$UV_VERSION" ]]; then
+  # Si UV est installé, source son script d'environnement
+  source "$HOME/.local/bin/env"
+fi
+
+
+############################################################################
+## Configuration de Groovy + SDKMAN                                       #
+############################################################################
+export SDKMAN_DIR="$HOME/.sdkman"
+
+# Vérifie si le script sdkman-init.sh existe dans le répertoire SDKMAN_DIR/bin
+# S'il existe, le source (ceci initialise SDKMAN)
+if [ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]; then
+  source "$SDKMAN_DIR/bin/sdkman-init.sh"
+fi
+
+export GTK_MODULES=canberra-gtk-module
+
+
+###############################################################################
+# Génère dynamiquement les alias git depuis le .gitconfig                     #
+###############################################################################
+if [ -f "$HOME/.gitconfig" ] && [ -f "$HOME/.functions/lib/git_aliases.sh" ]; then
+  source "$HOME/.functions/lib/git_aliases.sh"
+  load_git_aliases
+fi
+
+
+###############################################################################
+## Nettoyage et réorganisation de la variable PATH                            #
+###############################################################################
+if [ -f "$HOME/.functions/lib/clean_path.sh" ]; then
+  source "$HOME/.functions/lib/clean_path.sh"
+  clean_path
+fi
+
+
+###############################################################################
+## Mise en place d'un fond d'écran changeant toute les heures                 #
+##                                                                            #
+## crontab -l                                                                 #
+## 0 * * * * /home/galan/alm-dotfiles/.functions/bin/change_wallpaper.sh      #
+##                                                                            #
+##  La syntaxe se lit de gauche à droite :                                    #
+##  0 (Minutes) : A la minute zéro.                                           #
+##  * (Heures)  : Toutes les heures (0h, 1h, 2h, ... jusqu'à 23h).            #
+##  * (Jour)    : Chaque jour du mois.                                        #
+##  * (Mois)    : Chaque mois.                                                #
+##  * (Semaine) : Chaque jour de la semaine.                                  #
+###############################################################################
+if [ -x "$HOME/.functions/bin/change_wallpaper.sh" ]; then
+  "$HOME/.functions/bin/change_wallpaper.sh" > /dev/null 2>&1 &
+fi

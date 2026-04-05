@@ -1,60 +1,95 @@
+# ~/.gitconfig
+# Configuration Git personnalisée
+
+# ------------------------------------------------------------------------
+# Identité de l'utilisateur
+# ------------------------------------------------------------------------
 [user]
-    email = keltalan@proton.me
     name = Alan MARCHAND
+    email = keltalan@proton.me
+    # signingkey = <ID_de_ta_clé_GPG>   # (optionnel, pour signer les commits)
 
+# ------------------------------------------------------------------------
+# Initialisation des dépôts
+# ------------------------------------------------------------------------
 [init]
-    defaultBranch = main
+    defaultBranch = main   # Branche par défaut lors d'un git init
 
+# ------------------------------------------------------------------------
+# Éditeur par défaut
+# ------------------------------------------------------------------------
 [core]
-	editor = hx
+    editor = zed --wait   # Zed comme éditeur, avec --wait pour Git
 
+# ------------------------------------------------------------------------
+# Couleurs dans l'interface
+# ------------------------------------------------------------------------
 [color]
     ui = auto
 
 [color "branch"]
     current = yellow reverse
-    local = yellow
-    remote = green
+    local   = yellow
+    remote  = green
 
 [color "status"]
-    added = green
-    changed = yellow
+    added     = green
+    changed   = yellow
     untracked = red
 
 [color "diff"]
     meta = yellow
     frag = magenta
-    old = red
-    new = green
+    old  = red
+    new  = green
 
+# ------------------------------------------------------------------------
+# Push et Pull
+# ------------------------------------------------------------------------
 [push]
-    default = simple
+    default = simple   # push par défaut sur la branche courante
 
+[pull]
+    rebase = true      # rebase au lieu de merge lors d'un pull (historique plus propre)
+
+# ------------------------------------------------------------------------
+# Alias pratiques
+# ------------------------------------------------------------------------
 [alias]
     # Commandes courtes
-    gst = status
-    gco = checkout
-    gbr = branch
-    gci = commit
-    gcm = commit -m
-    gca = commit --amend
-    gdf = diff
-    gps = push
-    gpl = pull
+    gst     = status
+    gco     = checkout
+    gcb     = checkout -b
+    gbr     = branch
+    gbd     = branch -d
+    gbD     = branch -D
+    gci     = commit
+    gcm     = commit -m
+    gca     = commit --amend
+    gdf     = diff
+    gps     = push
+    gpl     = pull
 
     # Historique lisible
-    glg = log --oneline --graph --decorate --all
-    glast = log -1 HEAD
-    glog = log --graph --abbrev-commit --decorate --date=relative --all
+    glg     = log --oneline --graph --decorate --all
+    gl10    = log -10 --oneline --decorate
+    glast   = log -1 HEAD
+    glog    = log --graph --abbrev-commit --decorate --date=relative --all
+
+    # Stash
+    gsta    = stash
+    gstp    = stash pop
 
     # Nettoyage et maintenance
     gunstage = reset HEAD --
     gcleanup = "!git branch --merged | grep -v '\\*' | xargs git branch -d"
-    gprune = "!git remote prune origin"
+    gprune   = "!git remote prune origin"
 
     # Rebase interactif sur les 5 derniers commits
-    grebase = rebase -i HEAD~5
+    grebase  = rebase -i HEAD~5
 
+# ------------------------------------------------------------------------
+# Inclusion de configuration locale
+# ------------------------------------------------------------------------
 [include]
-    path = ~/.gitconfig.local
-
+    path = ~/.gitconfig.local   # Config additionnelle (emails pro/perso, clés SSH, etc.)

@@ -1,0 +1,44 @@
+// Project tasks configuration. See https://zed.dev/docs/tasks for documentation.
+//
+[
+  // --- WORKFLOW: EXECUTION ---
+  {
+    "label": "Python: Run Current File (uv)",
+    "command": "uv run python $ZED_FILE",
+    "reveal": "always",
+    "reveal_target": "dock",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false,
+  },
+  {
+    "label": "Python: Debug Current File (pdb)",
+    "command": "uv run python -m pdb $ZED_FILE",
+    "reveal": "always",
+    "reveal_target": "dock",
+  },
+
+  // --- WORKFLOW: QUALITY CONTROL ---
+  {
+    "label": "Check: Ruff Fix & Lint",
+    "command": "uv run ruff check . --fix && uv run ruff format .",
+    "reveal": "always",
+    "hide": "on_success",
+  },
+  {
+    "label": "Test: Pytest (Current File)",
+    "command": "uv run pytest $ZED_FILE",
+    "reveal": "always",
+  },
+  {
+    "label": "Test: Pytest (Full Suite)",
+    "command": "uv run pytest",
+    "reveal": "always",
+  },
+
+  // --- WORKFLOW: DEVOPS / SYSTEM ---
+  {
+    "label": "Shell: Lint Script (Shellcheck)",
+    "command": "shellcheck $ZED_FILE",
+    "reveal": "always",
+  },
+]

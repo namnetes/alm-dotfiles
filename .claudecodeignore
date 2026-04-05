@@ -1,0 +1,69 @@
+# 📂 GESTION DES TOKENS & CONTEXTE (Priorité 1)
+# On ignore les dossiers massifs pour éviter que Claude ne s'y perde
+node_modules/
+.venv/
+venv/
+target/
+bin/
+build/
+dist/
+out/
+.next/
+.cache/
+__pycache__/
+
+# ⚙️ CACHES & OUTILS (Bruit inutile)
+.git/
+.uv/
+.mypy_cache/
+.pytest_cache/
+.tox/
+.eslintcache
+.npm/
+.gradle/
+.idea/
+.vscode/
+.zed/
+
+# 📄 DOCUMENTS ET BINAIRES
+*.pdf
+*.zip
+*.tar.gz
+*.exe
+*.dll
+*.so
+*.dylib
+*.out
+*.o
+*.obj
+*.jar
+*.war
+
+# 📊 DONNÉES VOLUMINEUSES
+# On ignore les bases de données mais on laisse Claude voir les CSV (;)
+*.sqlite3
+*.db
+*.lcov
+*.coverage
+coverage/
+test-results/
+
+# 🪵 LOGS ET TEMPORAIRES
+*.log
+npm-debug.log*
+yarn-debug.log*
+*.tmp
+*.bak
+*~
+.DS_Store
+Thumbs.db
+
+# 🛡️ SÉCURITÉ (Critique)
+# On ne veut JAMAIS que Claude lise ou modifie tes secrets par erreur
+.env
+.env.*
+*.pem
+*.key
+bash_history
+.bash_profile
+.bashrc

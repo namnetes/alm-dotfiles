@@ -1,0 +1,41 @@
+# ~/.config/yazi/keymap.toml
+# Raccourcis yazi — s'ajoutent aux défauts (prepend = priorité plus haute)
+# Ref : https://yazi-rs.github.io/docs/configuration/keymap
+
+[manager]
+prepend_keymap = [
+  # ── Navigation style Vim ──────────────────────────────────────
+  # Plugin : yazi-rs/plugins#jump-to-char
+  { on = ["f"],        run = "plugin jump-to-char",      desc = "Sauter au caractère" },
+  # Plugin : yazi-rs/plugins#relative-motions
+  { on = ["1"],        run = "plugin relative-motions --args=1", desc = "1 ligne" },
+  { on = ["2"],        run = "plugin relative-motions --args=2", desc = "2 lignes" },
+  { on = ["3"],        run = "plugin relative-motions --args=3", desc = "3 lignes" },
+  { on = ["4"],        run = "plugin relative-motions --args=4", desc = "4 lignes" },
+  { on = ["5"],        run = "plugin relative-motions --args=5", desc = "5 lignes" },
+
+  # ── Filtrage intelligent ──────────────────────────────────────
+  # Plugin : yazi-rs/plugins#smart-filter
+  { on = ["F"],        run = "plugin smart-filter",      desc = "Filtre intelligent" },
+
+  # ── Gestion de la prévisualisation ───────────────────────────
+  # Plugin : yazi-rs/plugins#max-preview
+  { on = ["T"],        run = "plugin max-preview",       desc = "Prévisualisation plein écran" },
+  # Plugin : yazi-rs/plugins#hide-preview
+  { on = ["<C-p>"],    run = "plugin hide-preview",      desc = "Masquer/afficher prévisualisation" },
+
+  # ── Intégrations Git ─────────────────────────────────────────
+  # LazyGit sur le répertoire courant
+  { on = ["g", "l"],   run = "shell 'lazygit -p \"$1\"' --block --confirm", desc = "LazyGit" },
+  # Plugin : yazi-rs/plugins#diff
+  { on = [".", "d"],   run = "plugin diff",              desc = "Voir le diff" },
+
+  # ── Opérations fichiers ───────────────────────────────────────
+  # Plugin : yazi-rs/plugins#chmod
+  { on = ["<C-x>"],    run = "plugin chmod",             desc = "Chmod" },
+  # Ouvrir terminal dans le répertoire courant
+  { on = ["<C-t>"],    run = "shell 'kitty @ launch --type=os-window --cwd=\"$PWD\"'", desc = "Nouveau terminal ici" },
+
+  # ── Éditeur ──────────────────────────────────────────────────
+  { on = ["e"],        run = "open --interactive",           desc = "Ouvrir (interactif)" },
+]

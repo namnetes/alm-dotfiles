@@ -11,6 +11,10 @@ Thumbs.db
 .env
 .env.*
 
+# 📝 Éditeur Zed
+.zed/
+*.zed
+
 # 🐚 Bash
 *.sh~
 *.swp
@@ -19,7 +23,8 @@ bash_history
 .bash_profile
 .bashrc
 
-# 🐍 Python
+# 🐍 Python & uv
+# Exclusions spécifiques à uv
 __pycache__/
 *.py[cod]
 *.pyo
@@ -39,8 +44,12 @@ build/
 venv/
 Pipfile.lock
 poetry.lock
+uv.lock
+.uv/
+.python-version
 
-# 🧠 JavaScript / Node.js
+# 🧠 JavaScript / Node.js & npm
+# Cache local npm
 node_modules/
 npm-debug.log*
 yarn-debug.log*
@@ -53,6 +62,7 @@ coverage/
 out/
 .cache/
 .eslintcache
+.npm/
 
 # ☕ Java
 *.class

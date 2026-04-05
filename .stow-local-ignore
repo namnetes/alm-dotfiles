@@ -1,0 +1,25 @@
+# ===============================================================
+# .stow-local-ignore
+# Fichiers à ignorer lors du lien symbolique avec GNU Stow
+# ===============================================================
+
+# --- GESTION DE VERSION & CONFIG ---
+.gitconfig               # Configuration globale de Git (souvent gérée à part)
+.gitignore               # Liste des fichiers ignorés par Git dans ce dépôt
+.git/                   # Historique et métadonnées Git
+system-config           # Dossier de configuration spécifique (hors dotfiles)
+
+# --- INTELLIGENCE ARTIFICIELLE (CLAUDE) ---
+CLAUDE.md               # Guide de style et instructions pour Claude
+.claudecodeignore       # Ignorés spécifiques à l'agent Claude
+
+# --- Configuration de l'éditeur ---
+.editorconfig
+
+# --- DOCUMENTATION ---
+README.md               # Documentation du dépôt
+
+# --- SYSTÈME & JEUX (STEAM) ---
+# Ces fichiers sont souvent recréés par le système ou Steam
+.steampath              # Chemin d'installation Steam
+.steampid               # ID de processus Steam actif

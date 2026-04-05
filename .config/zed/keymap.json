@@ -1,0 +1,35 @@
+// Zed keymap
+//
+// For information on binding keys, see the Zed
+// documentation: https://zed.dev/docs/key-bindings
+//
+// To see the default key bindings run `zed: open default keymap`
+// from the command palette.
+[
+  {
+    "context": "Workspace",
+    "bindings": {
+      "alt-shift-g": "git_panel::ToggleFocus",
+      "alt-shift-f": "project_panel::ToggleFocus",
+      "alt-shift-o": "outline_panel::ToggleFocus",
+    },
+  },
+  {
+    "context": "Editor && vim_mode == insert",
+    "bindings": {
+      // "j k": "vim::NormalBefore"
+    },
+  },
+  {
+    "context": "Editor",
+    "bindings": {
+      "f5": ["task::Spawn", { "task_name": "Python: Run Current File (uv)" }],
+      "shift-f5": [
+        "task::Spawn",
+        { "task_name": "Python: Debug Current File (pdb)" },
+      ],
+      "f8": ["task::Spawn", { "task_name": "Check: Ruff Fix & Lint" }],
+      "alt-enter": "task::Spawn",
+    },
+  },
+]
