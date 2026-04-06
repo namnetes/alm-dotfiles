@@ -68,7 +68,7 @@
   "buffer_font_features": {
     "calt": true,
   },
-  "base_keymap": "None",
+  "base_keymap": "VSCode",
   "cursor_blink": true,
   "always_treat_brackets_as_autoclosed": true,
   "sticky_scroll": {
