@@ -1,5 +1,8 @@
 "$schema" = 'https://starship.rs/config-schema.json'
 
+# Augmente le temps alloué au scan
+scan_timeout = 120
+
 [aws]
 symbol = " "
 
@@ -32,6 +35,8 @@ symbol = " "
 
 [directory]
 read_only = " 󰌾"
+# Désactive le scan de fichiers volumineux si nécessaire
+truncation_length = 8
 
 [docker_context]
 symbol = " "
