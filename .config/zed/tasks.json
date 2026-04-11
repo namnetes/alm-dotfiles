@@ -44,14 +44,14 @@
 
   // --- CLAUDE CODE: INIT CLAUDE.MD ---
   {
-    "label": "Claude: Init Python project (CLAUDE_Python.md)",
-    "command": "cp ~/.claude/CLAUDE_Python.md $ZED_WORKTREE_ROOT/CLAUDE.md && echo 'CLAUDE.md (Python/Bash) initialized.'",
+    "label": "Claude: Init Open project (CLAUDE_Python.md)",
+    "command": "cp ~/.claude/CLAUDE_Open.md $ZED_WORKTREE_ROOT/CLAUDE.md && echo 'CLAUDE.md (Développement Open) initialized.'",
     "reveal": "always",
     "hide": "on_success",
   },
   {
-    "label": "Claude: Init COBOL project (CLAUDE_Cobol.md)",
-    "command": "cp ~/.claude/CLAUDE_Cobol.md $ZED_WORKTREE_ROOT/CLAUDE.md && echo 'CLAUDE.md (COBOL/z/OS) initialized.'",
+    "label": "Claude: Init Mainframe project (CLAUDE_Cobol.md)",
+    "command": "cp ~/.claude/CLAUDE_Mainframe.md $ZED_WORKTREE_ROOT/CLAUDE.md && echo 'CLAUDE.md (Mainframe Technologies) initialized.'",
     "reveal": "always",
     "hide": "on_success",
   },
