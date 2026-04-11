@@ -4,8 +4,8 @@
 # ===============================================================
 
 # --- GESTION DE VERSION & CONFIG ---
-.gitconfig               # Configuration globale de Git (souvent gérée à part)
-.gitignore               # Liste des fichiers ignorés par Git dans ce dépôt
+.gitconfig              # Configuration globale de Git (souvent gérée à part)
+.gitignore              # Liste des fichiers ignorés par Git dans ce dépôt
 .git/                   # Historique et métadonnées Git
 system-config           # Dossier de configuration spécifique (hors dotfiles)
 
@@ -14,6 +14,9 @@ CLAUDE.md               # Guide de style et instructions pour Claude
 .claudecodeignore       # Ignorés spécifiques à l'agent Claude
 settings.local.json     # Permissions Claude Code — géré dynamiquement,
                         # ne pas stower (le fichier réel reste dans ~/.claude/)
+
+# --- INTELLIGENCE GITHUB COPILOT ---
+.github/.*              # Guide de style et instruction pour Copilot
 
 # --- Configuration de l'éditeur ---
 .editorconfig

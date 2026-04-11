@@ -181,6 +181,15 @@
         "yaml": {
           "format": { "enable": true },
           "schemaStore": { "enable": true },
+          // Tags Python utilisés dans MkDocs — format correct : "!!tag type"
+          // ATTENTION : inopérant tant que le bug yaml-language-server #1201 n'est
+          // pas sorti en stable (scopeUri="null" empêche Zed de transmettre les settings).
+          "customTags": [
+            "!!python/name:pymdownx.superfences.fence_code_format scalar",
+            "!!python/name:pymdownx.superfences.fence_div_format scalar",
+            "!!python/name:material.extensions.emoji.twemoji scalar",
+            "!!python/name:material.extensions.emoji.to_svg scalar",
+          ],
         },
       },
     },
