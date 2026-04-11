@@ -1,77 +1,122 @@
-# 🌍 Global Engineering Standards (CLAUDE.md)
+# Claude Instructions
 
-## 🎯 Project Overview
+Rules common to all projects under this directory.
+Domain-specific rules are loaded automatically from subdirectories:
 
-Strict production standards for DevOps and Data Science tooling, optimized for the French ecosystem. This guide applies by default to all projects handled via Claude Code CLI or Zed.
+- `src/` — Python & Bash standards
+- `cobol/` — IBM Mainframe (COBOL 6.5, JCL, z/OS subsystems)
 
-## 🗣 Language & Writing Style
+---
 
-- **Default Language**: All interactions, explanations, and responses must be in **French** (Français) unless explicitly requested otherwise.
-- **Tone & Vocabulary**: Use a professional yet accessible vocabulary. Avoid overly simplistic terms as well as overly formal or literary language. The goal is technical efficiency, not literature.
-- **Ethics**: All content must remain **politically correct** and professional at all times.
-- **Code/Docs**: Technical content (code, variable names, docstrings, git commits) remains in **English** as per industry standards.
+## Mermaid Diagrams
 
-## 🛠 Command Palette (Modern Tooling)
+These rules apply to **all** diagrams regardless of the technology depicted:
+Python modules, shell pipelines, data models, API interactions, etc.
 
-Claude must prioritize `uv` to ensure performance and isolation:
+### Diagram type — choose the right one
 
-- **Environment**: `uv sync` (preferred), or `uv venv` + `source .venv/bin/activate`.
-- **Execution**: `uv run <script.py>` (preferred method for isolation).
-- **Dependencies**: `uv add <package>`, `uv remove <package>`.
-- **Quality**: `uv run ruff check . --fix` && `uv run pytest`.
+| Situation                                       | Diagram type                     |
+| ----------------------------------------------- | -------------------------------- |
+| Step-by-step workflow, algorithm, decision tree | `flowchart TD` (vertical)        |
+| Data pipeline, ETL, linear processing chain     | `flowchart LR` (horizontal)      |
+| Component / module architecture                 | `flowchart LR` or `flowchart TD` |
+| Sequence of calls between actors or services    | `sequenceDiagram`                |
+| Class structure, inheritance, composition       | `classDiagram`                   |
+| Database or data model                          | `erDiagram`                      |
+| State machine, lifecycle                        | `stateDiagram-v2`                |
 
-## 📏 Coding Standards (Enforced)
+Always add a visible title with `title:` at the top of every diagram.
 
-### 🐍 Python (PEP 8 Enhanced)
+### Background and general rendering
 
-- **Package Manager**: Always use `uv`. Never use `pip` or `poetry`.
-- **Line Length**: Strictly **88 characters** maximum (Black/Ruff style).
-- **Type Hinting**: Required for all function signatures.
-- **Docstrings**: Google Style (Napoleon).
+- **White background** — always add the init directive:
+  `%%{init: {"theme": "base", "themeVariables": {"background": "#ffffff"}}}%%`
+- Colors must be **visible** (sufficient contrast on white) but **not
+  garish** — avoid saturated primaries; prefer muted pastels with a darker
+  stroke of the same hue.
+- Every color must carry a **consistent semantic meaning** across all
+  diagrams in the project. Never assign a color arbitrarily.
 
-### 🐚 Shell (Bash/SH) & C
+### Color palette — semantic rules
 
-- **Line Length**: Strictly **80 characters** maximum.
-- **Safety (Bash)**: Always use `set -euo pipefail`.
-- **Formatting**: Use `\` for multi-line commands to maintain the 80-char limit.
+The same five classes are used in every diagram. Meaning is fixed
+project-wide — do not repurpose a class for a different semantic.
 
-### 📊 Data Handling (Localization: FR)
+| Class       | Fill      | Stroke    | Meaning — use for                                  |
+| ----------- | --------- | --------- | -------------------------------------------------- |
+| `startStop` | `#e1f5fe` | `#01579b` | Entry point, normal exit, success end              |
+| `logic`     | `#e8eaf6` | `#1a237e` | Processing, computation, decision, control flow    |
+| `data`      | `#fff3e0` | `#e65100` | Data, files, databases, queues, I/O                |
+| `error`     | `#ffebee` | `#c62828` | Error, failure, exception, abort                   |
+| `external`  | `#f3e5f5` | `#6a1b9a` | External system, third-party service, API, library |
 
-- **CSV Format**: Default delimiter is `;` (semicolon).
-- **Encoding**: Mandatory UTF-8.
-- **IO Functions**: Always specify `sep=';'` or `delimiter=';'` (Pandas/Polars).
-- **Numbers**: Use `.` for raw data. Use `,` only if a final "FR" report is explicitly requested.
+```
+%%{init: {"theme": "base", "themeVariables": {"background": "#ffffff"}}}%%
+flowchart TD
+    classDef startStop fill:#e1f5fe,stroke:#01579b,color:#000
+    classDef logic     fill:#e8eaf6,stroke:#1a237e,color:#000
+    classDef data      fill:#fff3e0,stroke:#e65100,color:#000
+    classDef error     fill:#ffebee,stroke:#c62828,color:#000
+    classDef external  fill:#f3e5f5,stroke:#6a1b9a,color:#000
+```
 
-## 🖼 Visuals & Documentation
+Rules:
 
-### 🧜‍♂️ Diagrams (Mermaid.js v10+)
+- Every `classDef` that is declared **must** be assigned to at least one node.
+- Do not define a class that is not used in the diagram.
+- Use `color:#000` (black text) on all nodes to ensure legibility on
+  pastel backgrounds.
 
-- **Structures**:
-  - `flowchart TD`: Vertical workflows, decision logic, algorithms.
-  - `flowchart LR`: Data pipelines, linear ETL flows.
-  - `sequenceDiagram`: API interactions and inter-module exchanges.
-- **Shapes (flowchart)**:
-  - `([ ... ])`: Start/End of program or function.
-  - `[[ ... ]]`: External function call or sub-routine.
-  - `[/ ... /]`: Data or file Input/Output (I/O).
-  - `{ ... }`: Conditional branching (if, while, switch).
-- **Error Handling**: Explicitly trace error exits (exit 1, raise) to a styled `error` node.
-- **Color Palette (classDef)**:
-  - `classDef startStop fill:#e1f5fe,stroke:#01579b` (Green/Blue: Success)
-  - `classDef error fill:#ffebee,stroke:#c62828` (Pale Red: Error)
-  - `classDef logic fill:#e8eaf6,stroke:#1a237e` (Lavender Blue: Process)
-  - `classDef data fill:#fff3e0,stroke:#e65100` (Pale Orange: I/O)
-- **Application**: Every node must receive its class (inline `:::className` or block). Always include a `title:` at the top of the block.
+### Node shapes (flowchart only)
 
-## 🧠 Smart Workflow
+- `([ ... ])` : Start / End
+- `[ ... ]` : Process, step, action
+- `[[ ... ]]` : Call to an external function or service
+- `[/ ... /]` : I/O — data read/write, file, queue
+- `{ ... }` : Conditional branch (if, switch, while)
+- `(( ... ))` : Connector (join point in complex diagrams)
 
-1. **Analyze**: Always read `pyproject.toml` (source of truth) before modifying code.
-2. **Autonomy**: If `ruff` or `pytest` fails, analyze the error, fix it, and re-run automatically.
-3. **Plan**: Propose an action plan if > 3 files are impacted or architecture changes.
-4. **Git**: Commit messages in Conventional Commits format (`feat:`, `fix:`, `docs:`, `style:`).
+### Legend
 
-## 📂 Architecture Note (Standard)
+Add a legend subgraph whenever the diagram uses 3 or more classes, or
+when the diagram may be read by someone unfamiliar with the color code.
+Only include the classes actually used in that diagram — one node per class.
 
-- `/src`: Main source code.
-- `/scripts`: Automation scripts (Max 80 chars/line).
-- `/data`: CSV files (Semicolon delimited).
+```
+    subgraph Legend["Legend"]
+        direction LR
+        L1([Start / End]):::startStop
+        L2[Process]:::logic
+        L3[/Data · File/]:::data
+        L4[[External service]]:::external
+        L5([Error / Abort]):::error
+    end
+```
+
+---
+
+## Writing & Reformulation
+
+- Always write in a politically correct and inclusive manner.
+- Use appropriate vocabulary — clear and precise, but not overly sophisticated.
+- Prioritize clarity and comprehension over literary style.
+- Sentences should be short and accessible to the widest possible audience.
+- Avoid jargon, anglicisms, and technical terms unless the context requires them.
+
+---
+
+## Git Commits
+
+Use Conventional Commits format: `feat:`, `fix:`, `docs:`, `style:`,
+`refactor:`, `test:`.
+
+Default branch is **`main`** — never `master`.
+
+---
+
+## Project Structure
+
+- `/src` — Python source code and Bash scripts
+- `/cobol` — IBM mainframe COBOL programs and JCL
+- `/data` — CSV files (semicolon-delimited, UTF-8)
+- `pyproject.toml` — source of truth for ruff, pytest, and dependencies

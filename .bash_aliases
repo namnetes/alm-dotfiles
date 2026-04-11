@@ -83,3 +83,14 @@ fi
 if command -v bat &> /dev/null; then
   alias cat='bat --paging=never --style=plain'
 fi
+
+
+## Claude Code — initialise le CLAUDE.md dans le projet courant
+## Templates stockés dans ~/.claude/ et gérés via alm-dotfiles (Stow)
+alias claude-python='\
+  cp ~/.claude/CLAUDE_Python.md ./CLAUDE.md && \
+  echo "CLAUDE.md (Python/Bash) initialized in $(pwd)"'
+
+alias claude-cobol='\
+  cp ~/.claude/CLAUDE_Cobol.md ./CLAUDE.md && \
+  echo "CLAUDE.md (COBOL/z/OS) initialized in $(pwd)"'

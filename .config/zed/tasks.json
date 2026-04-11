@@ -41,4 +41,18 @@
     "command": "shellcheck $ZED_FILE",
     "reveal": "always",
   },
+
+  // --- CLAUDE CODE: INIT CLAUDE.MD ---
+  {
+    "label": "Claude: Init Python project (CLAUDE_Python.md)",
+    "command": "cp ~/.claude/CLAUDE_Python.md $ZED_WORKTREE_ROOT/CLAUDE.md && echo 'CLAUDE.md (Python/Bash) initialized.'",
+    "reveal": "always",
+    "hide": "on_success",
+  },
+  {
+    "label": "Claude: Init COBOL project (CLAUDE_Cobol.md)",
+    "command": "cp ~/.claude/CLAUDE_Cobol.md $ZED_WORKTREE_ROOT/CLAUDE.md && echo 'CLAUDE.md (COBOL/z/OS) initialized.'",
+    "reveal": "always",
+    "hide": "on_success",
+  },
 ]
