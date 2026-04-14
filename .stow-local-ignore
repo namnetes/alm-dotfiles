@@ -4,7 +4,6 @@
 # ===============================================================
 
 # --- GESTION DE VERSION & CONFIG ---
-.gitconfig              # Configuration globale de Git (souvent gérée à part)
 .gitignore              # Liste des fichiers ignorés par Git dans ce dépôt
 .git/                   # Historique et métadonnées Git
 system-config           # Dossier de configuration spécifique (hors dotfiles)

@@ -173,8 +173,30 @@
     },
     "ruff": {
       "settings": {
-        "args": ["--line-length=88"],
-      },
+        "lineLength": 88,
+        "lint": {
+          "select": [
+            "E", "W", "F", "I", "N", "UP", "B", "C90",
+            "SIM", "RUF", "PTH", "PERF", "TRY", "LOG",
+            "G", "ERA", "FBT", "PL", "D"
+          ],
+          "ignore": [
+            "E501",   // line too long — handled by formatter
+            "B008",   // function call in default arg (Typer/FastAPI)
+            "D100",   // missing docstring in public module
+            "D104",   // missing docstring in public package
+            "D203",   // conflicts with D211
+            "D213",   // conflicts with D212
+            "TRY003"  // long messages outside exception class
+          ],
+          "fixable": ["ALL"]
+        },
+        "format": {
+          "quoteStyle": "double",
+          "indentStyle": "space",
+          "lineEnding": "lf"
+        }
+      }
     },
     "yaml-language-server": {
       "settings": {

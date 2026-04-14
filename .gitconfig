@@ -5,21 +5,20 @@
 # Identité de l'utilisateur
 # ------------------------------------------------------------------------
 [user]
-    name = Alan MARCHAND
+    name  = Alan MARCHAND
     email = keltalan@proton.me
-    # signingkey = <ID_de_ta_clé_GPG>   # (optionnel, pour signer les commits)
 
 # ------------------------------------------------------------------------
 # Initialisation des dépôts
 # ------------------------------------------------------------------------
 [init]
-    defaultBranch = main   # Branche par défaut lors d'un git init
+    defaultBranch = main
 
 # ------------------------------------------------------------------------
 # Éditeur par défaut
 # ------------------------------------------------------------------------
 [core]
-    editor = zed --wait   # Zed comme éditeur, avec --wait pour Git
+    editor = zed --wait
 
 # ------------------------------------------------------------------------
 # Couleurs dans l'interface
@@ -44,52 +43,76 @@
     new  = green
 
 # ------------------------------------------------------------------------
-# Push et Pull
+# Push, pull et fetch
 # ------------------------------------------------------------------------
 [push]
-    default = simple   # push par défaut sur la branche courante
+    autoSetupRemote = true   # Configure automatiquement le tracking lors d'un premier push
 
 [pull]
-    rebase = true      # rebase au lieu de merge lors d'un pull (historique plus propre)
+    rebase = false           # Utilise un merge (plus explicite, recommandé pour les débutants)
+
+[fetch]
+    prune = true             # Supprime automatiquement les branches distantes obsolètes
+
+# ------------------------------------------------------------------------
+# Qualité des diffs
+# ------------------------------------------------------------------------
+[diff]
+    algorithm = histogram    # Meilleur algorithme : plus lisible sur les refactorings
+
+# ------------------------------------------------------------------------
+# Rebase et résolution de conflits
+# ------------------------------------------------------------------------
+[rebase]
+    autosquash = true        # Place automatiquement les commits fixup!/squash! au bon endroit
+
+[rerere]
+    enabled = true           # Mémorise et rejoue automatiquement les résolutions de conflits
+
+# ------------------------------------------------------------------------
+# Affichage des branches et logs
+# ------------------------------------------------------------------------
+[branch]
+    sort = -committerdate    # Branches triées par date du dernier commit
+
+[log]
+    date = format:%Y-%m-%d %H:%M
 
 # ------------------------------------------------------------------------
 # Alias pratiques
 # ------------------------------------------------------------------------
 [alias]
     # Commandes courtes
-    gst     = status
-    gco     = checkout
-    gcb     = checkout -b
-    gbr     = branch
-    gbd     = branch -d
-    gbD     = branch -D
-    gci     = commit
-    gcm     = commit -m
-    gca     = commit --amend
-    gdf     = diff
-    gps     = push
-    gpl     = pull
+    st      = status -sb
+    co      = checkout
+    ci      = commit
+    br      = branch
+    d       = diff
+    ds      = diff --staged
+    undo    = reset --soft HEAD~1
+    po      = push origin HEAD
 
-    # Historique lisible
-    glg     = log --oneline --graph --decorate --all
+    # Historique graphique
+    lg      = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%ar) %C(bold blue)<%an>%Creset' --abbrev-commit --all
     gl10    = log -10 --oneline --decorate
     glast   = log -1 HEAD
-    glog    = log --graph --abbrev-commit --decorate --date=relative --all
+
+    # Gestion des branches
+    gcb     = checkout -b
+    gbd     = branch -d
+    gbD     = branch -D
 
     # Stash
     gsta    = stash
     gstp    = stash pop
 
-    # Nettoyage et maintenance
+    # Nettoyage
     gunstage = reset HEAD --
     gcleanup = "!git branch --merged | grep -v '\\*' | xargs git branch -d"
     gprune   = "!git remote prune origin"
 
-    # Rebase interactif sur les 5 derniers commits
-    grebase  = rebase -i HEAD~5
-
 # ------------------------------------------------------------------------
-# Inclusion de configuration locale
+# Configuration locale (email pro, clé GPG, etc.) — non versionné
 # ------------------------------------------------------------------------
 [include]
-    path = ~/.gitconfig.local   # Config additionnelle (emails pro/perso, clés SSH, etc.)
+    path = ~/.gitconfig.local
