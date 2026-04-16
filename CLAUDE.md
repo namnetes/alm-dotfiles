@@ -88,7 +88,7 @@ system-config/       # System-level config (NOT stowed, applied manually)
 - Shell functions in `.bash_functions` delegate Python work to scripts in `.functions/tools/`.
 - `.functions/bin/` scripts are standalone executables; `.functions/lib/` scripts are sourced (not executed directly).
 - `.clauderc` is a symlink to `.config/claude/global_rules.md`.
-- The `gsp` function checks git status across `~/alm-dotfiles`, `~/alm-tools`, and `~/alm-technook`.
+- The `gsp` function checks git status across `~/alm-dotfiles`, `~/alm-tools`, `~/alm-technook`, `~/workspaces/devinit`, and `~/workspaces/vmforge`.
 - `.config/zed/settings.json` configures ruff (88-char) and shfmt (80-char) as LSP formatters, matching the code standards above. LSPs: ruff, pyright, yaml-language-server.
 - `.config/yazi/init.lua` initializes community plugins (git, full-border, starship, smart-filter). Plugins are installed via `ya pack -a yazi-rs/plugins#<name>`.
 - `.config/yazi/keymap.toml` defines plugin keybindings (jump-to-char on `f`, smart-filter on `F`, lazygit on `g l`, max-preview on `T`).

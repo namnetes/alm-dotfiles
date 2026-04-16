@@ -235,6 +235,8 @@ gsp() { # Affiche le statut de plusieurs projets Git
     "$HOME/alm-dotfiles"
     "$HOME/alm-tools"
     "$HOME/alm-technook"
+    "$HOME/workspaces/devinit"
+    "$HOME/workspaces/vmforge"
   )
 
   # Codes de couleur ANSI
