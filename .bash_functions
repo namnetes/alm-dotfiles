@@ -338,6 +338,77 @@ gpgtool() { # Assistant GnuPG - Chiffrer/Déchiffrer un fichier
 
 
 ###############################################################################
+# Teste si une clé USB est bootable via QEMU                                  #
+###############################################################################
+usbboot() { # Teste si un périphérique USB est bootable avec QEMU
+  if ! command -v qemu-system-x86_64 &>/dev/null; then
+    echo "Erreur : qemu-system-x86_64 n'est pas installé."
+    echo "Installez-le avec : sudo apt install qemu-system-x86"
+    return 1
+  fi
+
+  if [ "$#" -eq 0 ] || [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    cat <<'EOF'
+usbboot — teste si un périphérique USB est bootable via QEMU
+
+UTILISATION
+  usbboot <périphérique>
+
+ARGUMENTS
+  <périphérique>   Chemin du périphérique bloc (ex. /dev/sdb).
+                   Les droits de lecture sont vérifiés ; si
+                   nécessaire, sudo est invoqué automatiquement.
+
+OPTIONS
+  -h, --help       Affiche cette aide.
+
+PRÉREQUIS
+  qemu-system-x86_64   sudo apt install qemu-system-x86
+
+EXEMPLES
+  usbboot /dev/sdb        # clé USB sur /dev/sdb
+  usbboot /dev/sdc        # clé USB sur /dev/sdc
+
+NOTES
+  - KVM est activé automatiquement si /dev/kvm est accessible
+    (accélération matérielle).
+  - Fermez la fenêtre QEMU pour arrêter le test.
+  - Identifiez votre périphérique au préalable avec : lsblk
+EOF
+    [ "$#" -eq 0 ] && return 1 || return 0
+  fi
+
+  local device="$1"
+
+  if [ ! -b "$device" ]; then
+    echo "Erreur : '$device' n'est pas un périphérique bloc valide."
+    return 1
+  fi
+
+  if [ ! -r "$device" ]; then
+    echo "Droits insuffisants — relance en superutilisateur..."
+    sudo bash -c \
+      "$(declare -f usbboot); usbboot $(printf '%q' "$device")"
+    return $?
+  fi
+
+  local qemu_args=(
+    -m 1024
+    -drive "file=$device,format=raw,if=virtio"
+    -boot order=c
+  )
+
+  if [ -w /dev/kvm ]; then
+    qemu_args+=(-enable-kvm)
+  fi
+
+  echo "Démarrage de '$device' dans QEMU..."
+  echo "Fermez la fenêtre QEMU pour arrêter le test."
+  qemu-system-x86_64 "${qemu_args[@]}"
+}
+
+
+###############################################################################
 ## Réinitialisation de Zed                                                    #
 ###############################################################################
 init_zed() { # Réinitialisation complète de Zed
