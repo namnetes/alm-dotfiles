@@ -235,8 +235,6 @@ gsp() { # Affiche le statut de plusieurs projets Git
     "$HOME/alm-dotfiles"
     "$HOME/alm-tools"
     "$HOME/alm-technook"
-    "$HOME/workspaces/devinit"
-    "$HOME/workspaces/vmforge"
   )
 
   # Codes de couleur ANSI
@@ -407,6 +405,97 @@ EOF
   echo "Démarrage de '$device' dans QEMU..."
   echo "Fermez la fenêtre QEMU pour arrêter le test."
   qemu-system-x86_64 "${qemu_args[@]}"
+}
+
+
+###############################################################################
+# Inventaire des shims et outils personnels installés                         #
+###############################################################################
+shims() { # Inventaire des shims — usage : shims [filtre]
+    local registry="$HOME/.local/share/alm-tools/shims.tsv"
+    local shim_dir="$HOME/.local/bin"
+    local grn='\033[0;32m' red='\033[0;31m'
+    local yel='\033[0;33m' cyn='\033[0;36m'
+    local bld='\033[1m'    rst='\033[0m'
+    local filter="${1:-}"
+
+    printf "\n${bld}%-12s %-18s %-22s %-20s %s${rst}\n" \
+        "ALIAS" "COMMANDE" "SCRIPT" "PROJET" "STATUT"
+    printf '%.0s─' {1..82}; echo
+
+    local count=0 missing=0
+    if [[ -f "$registry" ]]; then
+        while IFS='|' read -r al cmd scr proj desc; do
+            [[ -z "$al" ]] && continue
+            [[ -n "$filter" \
+                && "$al$cmd$scr$proj$desc" != *"$filter"* ]] && continue
+            local st sc
+            if [[ -x "$shim_dir/$al" ]]; then
+                st="✓ installé"; sc="$grn"
+            else
+                st="✗ manquant"; sc="$red"; (( missing++ ))
+            fi
+            printf "%-12s %-18s %-22s %-20s ${sc}%s${rst}\n" \
+                "$al" "$cmd" "$scr" "$(basename "$proj")" "$st"
+            (( count++ ))
+        done < <(grep -v '^[[:space:]]*#' "$registry" \
+                 | grep -v '^[[:space:]]*$')
+    else
+        printf "  Aucun registre trouvé : %s\n" "$registry"
+    fi
+
+    # Détection des fichiers exécutables non enregistrés dans ~/.local/bin
+    if [[ -z "$filter" && -d "$shim_dir" ]]; then
+        local orphans=()
+        while IFS= read -r f; do
+            local b; b=$(basename "$f")
+            if ! grep -q "^${b}|" "$registry" 2>/dev/null \
+               && file "$f" | grep -qiE 'text|script'; then
+                orphans+=("$b")
+            fi
+        done < <(find "$shim_dir" -maxdepth 1 -type f -executable \
+                 ! -name 'env' ! -name 'env.fish')
+        if [[ ${#orphans[@]} -gt 0 ]]; then
+            echo ""
+            printf "${yel}Scripts non enregistrés :${rst} %s\n" \
+                "${orphans[*]}"
+            printf "  Enregistrez avec : shim_add <alias> <cmd>" \
+                " <script> <projet> <desc>\n"
+        fi
+    fi
+
+    echo ""
+    printf "  ${cyn}%d outil(s)${rst}" "$count"
+    [[ $missing -gt 0 ]] \
+        && printf " · ${red}%d manquant(s)${rst}" "$missing"
+    printf " · registre : %s\n\n" "$registry"
+}
+
+
+###############################################################################
+# Ajoute un outil au registre des shims                                       #
+###############################################################################
+shim_add() { # Enregistre un shim : shim_add <alias> <cmd> <script> <proj> <desc>
+    local registry="$HOME/.local/share/alm-tools/shims.tsv"
+
+    if [[ $# -lt 5 ]]; then
+        printf "Usage : shim_add <alias> <commande> <script>" \
+            " <chemin_projet> <description>\n"
+        return 1
+    fi
+
+    local al="$1" cmd="$2" scr="$3" proj="$4" desc="$5"
+
+    mkdir -p "$(dirname "$registry")"
+
+    if grep -q "^${al}|" "$registry" 2>/dev/null; then
+        printf "[!] '%s' est déjà dans le registre.\n" "$al"
+        return 1
+    fi
+
+    printf "%s|%s|%s|%s|%s\n" \
+        "$al" "$cmd" "$scr" "$proj" "$desc" >> "$registry"
+    printf "[✓] '%s' ajouté au registre.\n" "$al"
 }
 
 

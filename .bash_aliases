@@ -85,6 +85,10 @@ if command -v bat &> /dev/null; then
 fi
 
 
+## Inventaire des shims et outils personnels (tl = tools list)
+alias tl='shims'
+
+
 ## Claude Code — initialise le CLAUDE.md dans le projet courant
 ## Templates stockés dans ~/.claude/ et gérés via alm-dotfiles (Stow)
 alias claude-open='\
