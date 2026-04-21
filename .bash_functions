@@ -500,6 +500,18 @@ shim_add() { # Enregistre un shim : shim_add <alias> <cmd> <script> <proj> <desc
 
 
 ###############################################################################
+## Export PDF depuis un site MkDocs local                                     #
+###############################################################################
+mkdocs-pdf() { # Usage : mkdocs-pdf <chemin> — génère <page>.pdf via Brave
+    brave-browser --headless \
+        --print-to-pdf="${1##*/}.pdf" \
+        --print-to-pdf-no-header \
+        --no-margins \
+        "http://localhost:8000/$1/"
+}
+
+
+###############################################################################
 ## Réinitialisation de Zed                                                    #
 ###############################################################################
 init_zed() { # Réinitialisation complète de Zed
